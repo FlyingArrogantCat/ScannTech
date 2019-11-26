@@ -51,7 +51,7 @@ class FPNHead(Module):
         self.block2 = ConvBlock(in_channels=128, out_channels=256, kernel_size=1, num_layer=1)
         self.block1 = ConvBlock(in_channels=64, out_channels=256, kernel_size=1, num_layer=1)
 
-        self.define_upsampling(self)
+        self.define_upsampling()
 
     def forward(self, features):
         c4 = self.block4(features[3])
@@ -77,7 +77,7 @@ class FPNHead(Module):
 
     def change_size(self, sizes):
         self.size = sizes
-        self.define_upsampling(self)
+        self.define_upsampling()
 
 
 class ConvBlock(Module):

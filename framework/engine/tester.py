@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 from framework.model.base import MainModel
 from framework.utils.utils import logging
@@ -30,13 +31,13 @@ class Tester:
         self.optimizer = None
         self.detach = detach
         if not self.detach:
-            self.optimizer = torch.optim.Adam([{'params': model.depthhead.parameters(), 'lr': lr},
-                                               {'params': model.head.parameters(), 'lr': lr},
-                                               {'params': model.backbone.parameters(), 'lr': lr * 1e-2}], lr=lr)
+            self.optimizer = torch.optim.Adam([{'params': self.model.depthhead.parameters(), 'lr': lr},
+                                               {'params': self.model.head.parameters(), 'lr': lr},
+                                               {'params': self.model.backbone.parameters(), 'lr': lr * 1e-2}], lr=lr)
 
         self.loss_function = nn.MSELoss()
-        self.dataset = MainDataset(dataset_path, split='val')
-        self.dataloader = DataLoader(self.dataset)
+        '''self.dataset = MainDataset(dataset_path, split='val')
+        self.dataloader = DataLoader(self.dataset)'''
 
     def testing(self):
         tt = time.clock()
@@ -50,7 +51,7 @@ class Tester:
             output = self.model(batch_sample['image'].to(self.device))
 
             if not self.detach:
-                loss.backward()
+                self.loss_function.backward()
                 self.optimizer.step()
 
         print('Time: ', time.clock() - tt)
@@ -64,12 +65,13 @@ class Tester:
 
     def test_sample(self, image_path, img_save_path=None):
 
-        get_size_from_backbone
         sample = cv2.imread(image_path, cv2.COLOR_BGR2RGB)
         input_transform = torchvision.transforms.Compose([transforms.ToTensor()])
-        img = input_transform(sample)
 
+        img = input_transform(sample)
+        t = time.clock()
         out = self.model(img[None, :, :, :]).detach().numpy()[0][0] * 255 * 2
+        print(f'Time: {time.clock() - t}')
 
         if img_save_path is not None and type(img_save_path) == str:
             cv2.imwrite(img_save_path, out)

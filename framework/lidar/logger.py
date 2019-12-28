@@ -1,6 +1,7 @@
 from pathlib import Path
 from distutils.dir_util import copy_tree
 import shutil
+from datetime import datetime
 
 
 class LogWriter:
@@ -41,6 +42,7 @@ class LogWriter:
             f.write("%s\n" % datetime.fromtimestamp(image_time).strftime('%Y-%m-%d %H:%M:%S.%f'))
 
     def save_lidar_data(self, time_lidar, df):
+        print('Saving lidar data...')
         self.indx += 1
         with open(str(self.lidar_path / 'timestamps.txt'), "a+") as f:
             f.write("%s\n" % time_lidar)
@@ -49,6 +51,7 @@ class LogWriter:
         self.save_dataframe(df, path=path)
 
     def save_dataframe(self, df, path=None, name="main_dataFrame"):
+        print('Saving dataframe...')
         if path is not None:
             df.to_csv(path, header=False, index=False)
         else:

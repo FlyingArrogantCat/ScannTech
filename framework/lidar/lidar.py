@@ -30,11 +30,13 @@ class PointReader:
         return self.df
 
     def get_pcap_data(self, file_number):
+        print('Getting pcap data...')
         pcap_file = str(self.pcap_files[int(file_number) - 1])
         pcap_data = open(pcap_file, 'rb').read()
         pcap_data = pcap_data[24:]
-        for offset in range(0, len(pcap_data), 1264):
-            if (len(pcap_data) - offset) < 1264: break
+        for offset in range(0, int(len(pcap_data)), 1264):
+            if (len(pcap_data) - offset) < 1264:
+                break
 
             ''' current packet 1264 inclide 16 timeinfo '''
             cur_packet = pcap_data[offset + 16: offset + 16 + 42 + 1200 + 4 + 2]
@@ -45,13 +47,13 @@ class PointReader:
             seq_index = 0
             for seq_offset in range(0, 1100, 100):
                 self.seq_processing(cur_data, seq_offset, seq_index, self.first_timestamp, int(file_number) - 1)
+        print('End processing pcap file...')
 
     def seq_processing(self, data, seq_offset, seq_index, first_timestamp, pcap_num):
         flag, first_azimuth = struct.unpack_from("<HH", data, seq_offset)
         step_azimuth = 0
         assert hex(flag) == '0xeeff', 'Flag error'
         for step in range(2):
-            print(step, seq_index, seq_offset)
             if step == 0 and seq_index % 2 == 0 and seq_index < 22:
                 flag, third_azimuth = struct.unpack_from("<HH", data, seq_offset + 4 + 3 * 16 * 2)
                 assert hex(flag) == '0xeeff', 'Flag error'

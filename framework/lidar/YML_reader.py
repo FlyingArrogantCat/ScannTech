@@ -7,8 +7,9 @@ import pandas as pd
 import numpy as np
 
 
-from lidar import PointProcessing
-from lidar import LogWriter
+from .lidar import PointProcessing
+from .logger import LogWriter
+
 
 class YML_Read:
     def __init__(self, data_path):
@@ -67,7 +68,7 @@ class YML_Read:
 
             if key.startswith("leftImage"):
                 yaml_img_name, leftImage_deviceSec, \
-                leftImage_grabMsec  = self.camera_timestamps_processing(shot['leftImage'].items(), image_number)
+                leftImage_grabMsec = self.camera_timestamps_processing(shot['leftImage'].items())
 
                 if yaml_img_name in self.image_files and yaml_img_name not in self.processed_images:
                     self.processed_images.append(yaml_img_name)
